@@ -1,0 +1,8 @@
+# Download and run the update script as root.
+[Service]
+Type=oneshot
+
+# Public URI of the script to run. Make sure it's using https!
+Environment=URI=https://raw.githubusercontent.com/willmoffat/regenboog-laptops/master/update.sh
+
+ExecStart=/bin/bash -c '/usr/bin/curl -s ${URI} | /bin/bash'

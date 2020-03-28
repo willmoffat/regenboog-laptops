@@ -1,0 +1,12 @@
+# Invoke the Regenboog update service regularly.
+
+[Timer]
+
+# Periodically:
+OnUnitActiveSec=30min
+
+# After power on:
+OnBootSec=2min
+
+[Install]
+WantedBy=timers.target
