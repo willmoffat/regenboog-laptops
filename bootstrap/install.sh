@@ -17,8 +17,10 @@ check_rootuser_or_die() {
 }
 
 download() {
-    mkdir /tmp/bootstrap
-    cd /tmp/bootstrap
+    DIR=/tmp/bootstrap
+    rm -rf $DIR
+    mkdir $DIR
+    cd $DIR
     curl -s -O $REMOTE_TARBALL
     tar xf files.tgz
 }
