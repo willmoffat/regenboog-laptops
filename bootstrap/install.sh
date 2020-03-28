@@ -36,6 +36,14 @@ install_updater() {
     cd ..
 }
 
+tweak_ui() {
+    # Install all UI assets in /root/ui
+    cp -r ui /root
+    URI=file:///root/ui/logoRegenboog.png
+    gsettings set org.cinnamon.desktop.background picture-uri $URI
+}
+
 check_rootuser_or_die
 download
 install_updater
+tweak_ui
