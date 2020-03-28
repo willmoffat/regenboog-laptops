@@ -31,7 +31,7 @@ install_updater() {
     cd updater
     cp "$SERVICE" "$TIMER" /etc/systemd/system/
     systemctl daemon-reload
-    systemctl enable "$SERVICE"
+    systemctl enable "$TIMER"
     systemctl start "$TIMER"
     cd ..
 }
