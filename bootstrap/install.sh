@@ -54,13 +54,14 @@ remove_packages() {
     # hexchat - no chat
     # tranmission - no torrents
     # backgrounds are 300MB.
+    #   mint-backgrounds-tricia removes mint-artwork which is needed for the start menu.
+    #   TODO(wdm) Remove 'mint-backgrounds-*'
     # help files are 22MB each.
     apt purge -y \
         firefox \
         thunderbird \
         hexchat \
         transmission-common \
-        'mint-backgrounds-*' \
         libreoffice-help-de \
         libreoffice-help-pt-br \
         libreoffice-help-zh-cn \
