@@ -1,15 +1,21 @@
 #! /bin/bash
 
 # After download this installs the custom files and starts
-# services. Runs as root.
+# services. Runs as root in $TMP_DIR
 
+# For testing without using GitHub use:
+# BS=http://xxx.nrok.io/bootstrap
+# curl -sL $BS/install.sh | bash -s $BS/files.tgz
+
+# Download files from GitHub.
 REMOTE=https://raw.githubusercontent.com/willmoffat/regenboog-laptops/master
-REMOTE_TARBALL=$REMOTE/bootstrap/files.tgz
+DEFAULT_TARBALL=$REMOTE/bootstrap/files.tgz
+REMOTE_TARBALL=${1-$DEFAULT_TARBALL}
 
+TMP_DIR=/tmp/bootstrap
 LOCAL_DIR=/regenboog
 
 set -eu
-cd "$(dirname "$0")"
 
 check_rootuser_or_die() {
     if [[ $EUID -ne 0 ]]; then
@@ -19,10 +25,10 @@ check_rootuser_or_die() {
 }
 
 download() {
-    DIR=/tmp/bootstrap
-    rm -rf $DIR
-    mkdir $DIR
-    cd $DIR
+    mkdir -p $LOCAL_DIR
+    rm -rf $TMP_DIR
+    mkdir -p $TMP_DIR
+    cd $TMP_DIR
     curl -s -O $REMOTE_TARBALL
     tar xf files.tgz
 }
@@ -62,6 +68,7 @@ remove_packages() {
         libreoffice-help-ru \
         libreoffice-help-zh-tw \
         || true
+    # Removes 600MB of packages.
 }
 
 update_packages() {
@@ -75,24 +82,42 @@ install_google_chrome() {
     apt install google-chrome-stable
 }
 
-tweak_ui() {
-    mkdir -p $LOCAL_DIR
-    chown -R leerling:leerling $LOCAL_DIR
-    sudo -u leerling cp -r ui $LOCAL_DIR
+# Setup UI options.
+# You can find the names of these options by setting them using the Linux Mint UI
+# and then running
+#    dconf dump /tmp/conf
 
-    # We are root, so we must send gsettings to the correct process.
-    PID=$(pgrep cinnamon | head -1)
-    export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
-
+# This function is written out using declare to be run as the user (not root).
+# Variables must be local to function or echo-ed below.
+setup_user() {
+    # Desktop
     URI=file://$LOCAL_DIR/ui/logoRegenboog.png
     gsettings set org.cinnamon.desktop.background picture-uri $URI
     gsettings set org.cinnamon.desktop.background picture-options stretched
+
+    # No screen lock since it requires user password to log back in.
+    gsettings set org.cinnamon.desktop.lockdown disable-lock-screen true
+    gsettings set org.cinnamon.desktop.screensaver lock-enabled false
+    gsettings set org.cinnamon.settings-daemon.plugins.power lock-on-suspend false
 }
 
-check_rootuser_or_die
-download
-install_updater
-remove_packages
-update_packages
-install_google_chrome
-tweak_ui
+write_setup_user() {
+    FILE=$LOCAL_DIR/setup_user.sh
+    cat << EOF > $FILE
+LOCAL_DIR=$LOCAL_DIR
+$(declare -f setup_user)
+setup_user
+EOF
+    chown leerling:leerling $FILE
+    chmod 700 $FILE
+    echo "Please run"
+    echo $FILE
+}
+
+# check_rootuser_or_die
+# download
+# install_updater
+# remove_packages
+# update_packages
+# install_google_chrome
+write_setup_user
