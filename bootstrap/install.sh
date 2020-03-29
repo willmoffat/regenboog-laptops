@@ -81,7 +81,7 @@ tweak_ui() {
     sudo -u leerling cp -r ui $LOCAL_DIR
 
     # We are root, so we must send gsettings to the correct process.
-    PID=$(pgrep cinnamon)
+    PID=$(pgrep cinnamon | head -1)
     export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
 
     URI=file://$LOCAL_DIR/ui/logoRegenboog.png
