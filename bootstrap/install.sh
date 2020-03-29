@@ -76,10 +76,11 @@ install_google_chrome() {
 }
 
 tweak_ui() {
-    cp -r ui $LOCAL_DIR
-    URI=file:///$LOCAL_DIR/ui/logoRegenboog.png
-    sudo leerling gsettings set org.cinnamon.desktop.background picture-uri $URI
-    #TODO(wdm) set stretch.
+    sudo -u leerling mkdir -p $LOCAL_DIR
+    sudo -u leerling cp -r ui $LOCAL_DIR/ui
+    URI=file://$LOCAL_DIR/ui/logoRegenboog.png
+    sudo -u leerling gsettings set org.cinnamon.desktop.background picture-uri $URI
+    sudo -u leerling gsettings set org.cinnamon.desktop.background picture-options stretched
 }
 
 check_rootuser_or_die
