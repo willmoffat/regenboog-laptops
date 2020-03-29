@@ -76,11 +76,17 @@ install_google_chrome() {
 }
 
 tweak_ui() {
-    sudo -u leerling mkdir -p $LOCAL_DIR
-    sudo -u leerling cp -r ui $LOCAL_DIR/ui
+    mkdir -p $LOCAL_DIR
+    chown -R leerling:leerling $LOCAL_DIR
+    sudo -u leerling cp -r ui $LOCAL_DIR
+
+    # We are root, so we must send gsettings to the correct process.
+    PID=$(pgrep cinnamon)
+    export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
+
     URI=file://$LOCAL_DIR/ui/logoRegenboog.png
-    sudo -u leerling gsettings set org.cinnamon.desktop.background picture-uri $URI
-    sudo -u leerling gsettings set org.cinnamon.desktop.background picture-options stretched
+    gsettings set org.cinnamon.desktop.background picture-uri $URI
+    gsettings set org.cinnamon.desktop.background picture-options stretched
 }
 
 check_rootuser_or_die
