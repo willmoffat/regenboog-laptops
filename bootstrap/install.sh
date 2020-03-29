@@ -53,12 +53,14 @@ remove_packages() {
     # thunderbird - webmail only
     # hexchat - no chat
     # tranmission - no torrents
+    # backgrounds are 300MB.
     # help files are 22MB each.
     apt purge -y \
         firefox \
         thunderbird \
         hexchat \
         transmission-common \
+        'mint-backgrounds-*' \
         libreoffice-help-de \
         libreoffice-help-pt-br \
         libreoffice-help-zh-cn \
@@ -114,10 +116,10 @@ EOF
     echo $FILE
 }
 
-# check_rootuser_or_die
-# download
-# install_updater
-# remove_packages
-# update_packages
-# install_google_chrome
+check_rootuser_or_die
+download
+install_updater
+remove_packages
+update_packages
+install_google_chrome
 write_setup_user
