@@ -48,6 +48,12 @@ install_updater() {
     cd ..
 }
 
+setup_software_sources() {
+    LIST=etc/apt/sources.list.d/official-package-repositories.list
+    cp /$LIST /$LIST.orig
+    cp $LIST /$LIST
+}
+
 # Check size of packages with:
 # dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n
 remove_packages() {
@@ -59,7 +65,7 @@ remove_packages() {
     #   mint-backgrounds-tricia removes mint-artwork which is needed for the start menu.
     #   TODO(wdm) Remove 'mint-backgrounds-*'
     # help files are 22MB each.
-    apt purge -y \
+    apt purge \
         firefox \
         thunderbird \
         hexchat \
@@ -77,7 +83,7 @@ remove_packages() {
 }
 
 update_packages() {
-    apt update && apt upgrade -y || true
+    apt update && apt upgrade || true
 }
 
 install_google_chrome() {
@@ -155,6 +161,7 @@ $SETUP_FILE
 check_rootuser_or_die
 download
 install_updater
+setup_software_sources
 remove_packages
 update_packages
 install_google_chrome

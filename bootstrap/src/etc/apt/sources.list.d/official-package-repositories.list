@@ -1,0 +1,16 @@
+# Note(wdm) Setup Beligan mirrors.
+# Automates these steps:
+#   Packketbronnen
+#   (wachtwoord)
+#   Hoofdserver: http://mirrors.evowise.com/linuxmint/packages
+#   Basis (bionic): http://mirror.unix-solutions.be/ubuntu
+#   Click OK
+
+deb http://mirrors.evowise.com/linuxmint/packages tricia main upstream import backport
+
+deb http://mirror.unix-solutions.be/ubuntu bionic main restricted universe multiverse
+deb http://mirror.unix-solutions.be/ubuntu bionic-updates main restricted universe multiverse
+deb http://mirror.unix-solutions.be/ubuntu bionic-backports main restricted universe multiverse
+
+deb http://security.ubuntu.com/ubuntu/ bionic-security main restricted universe multiverse
+deb http://archive.canonical.com/ubuntu/ bionic partner
