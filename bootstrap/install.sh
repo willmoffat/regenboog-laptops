@@ -14,6 +14,7 @@ REMOTE_TARBALL=${1-$DEFAULT_TARBALL}
 
 TMP_DIR=/tmp/bootstrap
 LOCAL_DIR=/regenboog
+LOCAL_USER=leerling
 
 set -eu
 
@@ -40,6 +41,7 @@ install_updater() {
 
     cd updater
     cp "$SERVICE" "$TIMER" /etc/systemd/system/
+    cp "55-regenboog.conf" /etc/rsyslog.d/
     systemctl daemon-reload
     systemctl enable "$TIMER"
     systemctl start "$TIMER"
@@ -99,22 +101,39 @@ setup_user() {
     gsettings set org.cinnamon.desktop.background picture-options stretched
 
     # No screen lock since it requires user password to log back in.
-    gsettings set org.cinnamon.desktop.lockdown disable-lock-screen true
-    gsettings set org.cinnamon.desktop.screensaver lock-enabled false
-    gsettings set org.cinnamon.settings-daemon.plugins.power lock-on-suspend false
+    # Note(wdm) Now are have user passwords, so defaults are OK.
+    # gsettings set org.cinnamon.desktop.lockdown disable-lock-screen true
+    # gsettings set org.cinnamon.desktop.screensaver lock-enabled false
+    # gsettings set org.cinnamon.settings-daemon.plugins.power lock-on-suspend false
+
+    printf '
+
+Install part 2 finished!
+'
 }
 
+SETUP_FILE=$LOCAL_DIR/setup_user.sh
 write_setup_user() {
-    FILE=$LOCAL_DIR/setup_user.sh
-    cat << EOF > $FILE
+    cat << EOF > $SETUP_FILE
 LOCAL_DIR=$LOCAL_DIR
 $(declare -f setup_user)
 setup_user
 EOF
-    chown leerling:leerling $FILE
-    chmod 700 $FILE
-    echo "Please run"
-    echo $FILE
+    chown $LOCAL_USER:$LOCAL_USER $SETUP_FILE
+    chmod 700 $SETUP_FILE
+}
+
+show_success() {
+    printf "
+
+===========================
+| Install part 1 finished |
+===========================
+
+Now please run:
+
+$SETUP_FILE
+"
 }
 
 check_rootuser_or_die
@@ -124,3 +143,4 @@ remove_packages
 update_packages
 install_google_chrome
 write_setup_user
+show_success

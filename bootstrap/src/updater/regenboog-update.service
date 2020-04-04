@@ -7,3 +7,8 @@ Environment=URI=https://raw.githubusercontent.com/willmoffat/regenboog-laptops/m
 
 # Leading '-' so we ignore any curl or script errors.
 ExecStart=-/bin/bash -c '/usr/bin/curl -s ${URI} | /bin/bash'
+
+# Send any output to papertrail
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=regenboog-update
