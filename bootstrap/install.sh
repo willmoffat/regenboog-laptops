@@ -87,6 +87,13 @@ install_google_chrome() {
     apt install google-chrome-stable
 }
 
+install_zoom() {
+    cd /tmp
+    curl -sL -O https://zoom.us/client/latest/zoom_amd64.deb
+    apt install ./zoom_amd64.deb
+    cd -
+}
+
 remove_sudo() {
     if id -nG "$LOCAL_USER" | grep -qw sudo; then
         echo 'Removing $LOCAL_USER from sudo group'
@@ -151,6 +158,8 @@ install_updater
 remove_packages
 update_packages
 install_google_chrome
+install_zoom
+apt install skypeforlinux
 remove_sudo
 write_setup_user
 show_success
