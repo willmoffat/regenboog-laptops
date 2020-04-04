@@ -65,7 +65,7 @@ remove_packages() {
     #   mint-backgrounds-tricia removes mint-artwork which is needed for the start menu.
     #   TODO(wdm) Remove 'mint-backgrounds-*'
     # help files are 22MB each.
-    apt purge \
+    apt purge -y \
         firefox \
         thunderbird \
         hexchat \
@@ -83,29 +83,29 @@ remove_packages() {
 }
 
 update_packages() {
-    apt update && apt upgrade || true
+    apt update && apt upgrade -y || true
 }
 
 install_google_chrome() {
     wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
     echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list
     apt update
-    apt install google-chrome-stable
+    apt install -y google-chrome-stable
 }
 
 install_zoom() {
     cd /tmp
     curl -sL -O https://zoom.us/client/latest/zoom_amd64.deb
-    apt install ./zoom_amd64.deb
+    apt install -y ./zoom_amd64.deb
     cd -
 }
 
 remove_sudo() {
     if id -nG "$LOCAL_USER" | grep -qw sudo; then
-        echo 'Removing $LOCAL_USER from sudo group'
+        echo "Removing $LOCAL_USER from sudo group"
         deluser $LOCAL_USER sudo
     else
-        echo 'Already removed $LOCAL_USER from sudo'
+        echo "Already removed $LOCAL_USER from sudo"
     fi
 }
 
@@ -166,7 +166,7 @@ remove_packages
 update_packages
 install_google_chrome
 install_zoom
-apt install skypeforlinux
+apt install -y skypeforlinux
 remove_sudo
 write_setup_user
 show_success
