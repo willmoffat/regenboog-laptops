@@ -87,6 +87,15 @@ install_google_chrome() {
     apt install google-chrome-stable
 }
 
+remove_sudo() {
+    if id -nG "$LOCAL_USER" | grep -qw sudo; then
+        echo 'Removing $LOCAL_USER from sudo group'
+        deluser $LOCAL_USER sudo
+    else
+        echo 'Already removed $LOCAL_USER from sudo'
+    fi
+}
+
 # Setup UI options.
 # You can find the names of these options by setting them using the Linux Mint UI
 # and then running
@@ -142,5 +151,6 @@ install_updater
 remove_packages
 update_packages
 install_google_chrome
+remove_sudo
 write_setup_user
 show_success
