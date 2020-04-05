@@ -121,7 +121,7 @@ remove_sudo() {
 # Variables must be local to function or echo-ed below.
 setup_user() {
     # Desktop
-    URI=file://regenboog/logoRegenboog.png
+    URI=file:///regenboog/logoRegenboog.png
     gsettings set org.cinnamon.desktop.background picture-uri $URI
     gsettings set org.cinnamon.desktop.background picture-options stretched
 
@@ -133,7 +133,10 @@ setup_user() {
 
     printf '
 
-Install part 2 finished!
+============================
+| Install part 2 finished! |
+============================
+
 '
 }
 
