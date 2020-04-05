@@ -17,9 +17,22 @@ LOCAL_USER=leerling
 
 set -eu
 
+read -p "Enter your name: " GEEK
+if [ "${GEEK:-}" == "" ] ; then
+    echo "Error: Name is required for inventory form"
+    exit 1
+fi
+
+# Don't use NL for tool output. Makes it easier to grep.
+export LANGUAGE=en_US.UTF-8
+
 check_rootuser_or_die() {
     if [[ $EUID -ne 0 ]]; then
-        echo "This script must be run as root"
+        echo "Error: This script must be run as root"
+        exit 1
+    fi
+    if [ ! -d /home/$LOCAL_USER ]; then
+        echo "Error $LOCAL_USER not setup"
         exit 1
     fi
 }
@@ -118,6 +131,58 @@ remove_sudo() {
     fi
 }
 
+send_inventory() {
+    set +e # Don't stop for errors in this function.
+    # HOSTNAME - set during Linux install
+    MODEL=$(dmidecode -s system-product-name)
+    BIOS_DATE=$(dmidecode -s bios-release-date)
+    SERIAL=$(dmidecode -s system-serial-number)
+    MAC=$(cat /sys/class/net/wl*/address)
+    CORES=$(cat /proc/cpuinfo  | grep processor | wc -l)
+    CPU=$(dmidecode -s processor-version)
+    RAM=$(dmidecode -t 17 | grep "Size.*MB" | awk '{s+=$2} END {print s / 1024}')
+    DISK=$(lsblk  --output SIZE -n -d /dev/sda)
+    BATTERY_CAPACITY=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0  | grep capacity | cut -d: -f2 | sed 's/ //g')
+    BOOT_TIME=$(systemd-analyze time | head -1 | cut -d' ' -f10)
+    # GEEK - typed by user
+    printf '%' "
+HOSTNAME=$HOSTNAME
+MODEL=$MODEL
+BIOS_DATE=$BIOS_DATE
+SERIAL=$SERIAL
+MAC=$MAC
+CORES=$CORES
+CPU=$CPU
+RAM=$RAM
+DISK=$DISK
+BATTERY_CAPACITY=$BATTERY_CAPACITY
+BOOT_TIME=$BOOT_TIME
+GEEK=$GEEK
+"
+    # The entry numbers come from the pre-fill link:
+    # https://docs.google.com/forms/d/1whIxQAbOKrA3P-gIemGjeanjEIMZQrHSy7HpH8Sj8T4/prefill
+
+    FORM='1FAIpQLSedHoX6hK3nwCpTrKg3ZJuweRzxn3wcnpnReAg4-sNs-Cmu2Q'
+    URL=https://docs.google.com/forms/d/$FORM/formResponse
+
+    curl $URL \
+         -d ifq \
+         -d entry.1814162735="$HOSTNAME" \
+         -d entry.1215446301="$MODEL" \
+         -d entry.2045176631="$BIOS_DATE" \
+         -d entry.1669587106="$SERIAL" \
+         -d entry.1946320022="$MAC" \
+         -d entry.2025752678="$CORES" \
+         -d entry.1375974966="$CPU" \
+         -d entry.1262751032="$RAM" \
+         -d entry.146454854="$BATTERY_CAPACITY" \
+         -d entry.485034353="$BOOT_TIME" \
+         -d entry.1744186849="$GEEK" \
+         -d submit=Submit
+
+    set -e
+}
+
 # Setup UI options.
 # You can find the names of these options by setting them using the Linux Mint UI
 # and then running
@@ -180,4 +245,5 @@ install_zoom
 apt install -y skypeforlinux
 remove_sudo
 write_setup_user
+send_inventory
 show_success
