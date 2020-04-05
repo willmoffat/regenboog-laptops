@@ -17,8 +17,8 @@ LOCAL_USER=leerling
 
 set -eu
 
-read -p "Enter your name: " GEEK
-if [ "${GEEK:-}" == "" ] ; then
+GEEK="${1:-}"
+if [ "$GEEK" == "" ] ; then
     echo "Error: Name is required for inventory form"
     exit 1
 fi
@@ -145,7 +145,7 @@ send_inventory() {
     BATTERY_CAPACITY=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0  | grep capacity | cut -d: -f2 | sed 's/ //g')
     BOOT_TIME=$(systemd-analyze time | head -1 | cut -d' ' -f10)
     # GEEK - typed by user
-    printf '%' "
+    printf '%s' "
 HOSTNAME=$HOSTNAME
 MODEL=$MODEL
 BIOS_DATE=$BIOS_DATE
@@ -163,9 +163,12 @@ GEEK=$GEEK
     # https://docs.google.com/forms/d/1whIxQAbOKrA3P-gIemGjeanjEIMZQrHSy7HpH8Sj8T4/prefill
 
     FORM='1FAIpQLSedHoX6hK3nwCpTrKg3ZJuweRzxn3wcnpnReAg4-sNs-Cmu2Q'
-    URL=https://docs.google.com/forms/d/$FORM/formResponse
+    URL=https://docs.google.com/forms/d/e/$FORM/formResponse
 
+    # Post to Google Form.
+    # Only show status code
     curl $URL \
+         -s -o /dev/null -w "%{http_code}" \
          -d ifq \
          -d entry.1814162735="$HOSTNAME" \
          -d entry.1215446301="$MODEL" \
@@ -175,6 +178,7 @@ GEEK=$GEEK
          -d entry.2025752678="$CORES" \
          -d entry.1375974966="$CPU" \
          -d entry.1262751032="$RAM" \
+         -d entry.1323787092="$DISK" \
          -d entry.146454854="$BATTERY_CAPACITY" \
          -d entry.485034353="$BOOT_TIME" \
          -d entry.1744186849="$GEEK" \

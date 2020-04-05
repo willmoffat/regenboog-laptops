@@ -6,8 +6,9 @@ Files for setting up laptops for De Regenboog
 Press `Ctrl-Alt-T` to open a terminal.
 
 ### Part 1 - type:
+(Replace YOUR_NAME with the name of the geek doing the install)
 
-`su -c 'curl -sL https://tinyurl.com/regen-run | bash'`
+`su -c 'curl -sL https://u.nu/regenrun | bash -s YOUR_NAME'`
 
 If successful you will see:`| Install part 1 finished |`
 
