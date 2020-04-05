@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 CUR=$PWD/files.tgz
 NEW=/tmp/files.tgz
 
-cd src/
+cd root/
 # Using 'z' option directly includes a timestamp which creates unnecessary
 # git diffs, so we invoke gzip separately.
 tar c . | gzip -n > $NEW

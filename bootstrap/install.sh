@@ -12,8 +12,7 @@ REMOTE=https://raw.githubusercontent.com/willmoffat/regenboog-laptops/master
 DEFAULT_TARBALL=$REMOTE/bootstrap/files.tgz
 REMOTE_TARBALL=${1-$DEFAULT_TARBALL}
 
-TMP_DIR=/tmp/bootstrap
-LOCAL_DIR=/regenboog
+LOCAL_TARBALL=/tmp/files.tgz
 LOCAL_USER=leerling
 
 set -eu
@@ -26,12 +25,9 @@ check_rootuser_or_die() {
 }
 
 download() {
-    mkdir -p $LOCAL_DIR
-    rm -rf $TMP_DIR
-    mkdir -p $TMP_DIR
-    cd $TMP_DIR
-    curl -s -O $REMOTE_TARBALL
-    tar xf files.tgz
+    curl -s -o $LOCAL_TARBALL $REMOTE_TARBALL
+    cd /
+    tar xfv $LOCAL_TARBALL
 }
 
 install_updater() {
@@ -39,19 +35,9 @@ install_updater() {
     SERVICE="$NAME.service"
     TIMER="$NAME.timer"
 
-    cd updater
-    cp "$SERVICE" "$TIMER" /etc/systemd/system/
-    cp "55-regenboog.conf" /etc/rsyslog.d/
     systemctl daemon-reload
     systemctl enable "$TIMER"
     systemctl start "$TIMER"
-    cd ..
-}
-
-setup_software_sources() {
-    LIST=etc/apt/sources.list.d/official-package-repositories.list
-    cp /$LIST /$LIST.orig
-    cp $LIST /$LIST
 }
 
 # Check size of packages with:
@@ -97,10 +83,13 @@ install_google_chrome() {
 }
 
 install_zoom() {
-    cd /tmp
-    curl -sL -O https://zoom.us/client/latest/zoom_amd64.deb
-    apt install -y ./zoom_amd64.deb
-    cd -
+    if [ -r /usr/bin/zoom ] ; then
+       echo 'Zoom already installed'
+       return
+    fi
+    TMP_DEB=/tmp/zoom_amd64.deb
+    curl -sL -o $TMP_DEB https://zoom.us/client/latest/zoom_amd64.deb
+    apt install -y $TMP_DEB
 }
 
 # Linux Mint has a simple auto-update system.
@@ -132,7 +121,7 @@ remove_sudo() {
 # Variables must be local to function or echo-ed below.
 setup_user() {
     # Desktop
-    URI=file://$LOCAL_DIR/ui/logoRegenboog.png
+    URI=file://regenboog/logoRegenboog.png
     gsettings set org.cinnamon.desktop.background picture-uri $URI
     gsettings set org.cinnamon.desktop.background picture-options stretched
 
@@ -148,10 +137,10 @@ Install part 2 finished!
 '
 }
 
-SETUP_FILE=$LOCAL_DIR/setup_user.sh
+# We generate this file so that we don't have to update the tarball on each change.
+SETUP_FILE=/regenboog/setup_user.sh
 write_setup_user() {
     cat << EOF > $SETUP_FILE
-LOCAL_DIR=$LOCAL_DIR
 $(declare -f setup_user)
 setup_user
 EOF
@@ -175,7 +164,6 @@ $SETUP_FILE
 check_rootuser_or_die
 download
 install_updater
-setup_software_sources
 remove_packages
 update_packages
 install_google_chrome
