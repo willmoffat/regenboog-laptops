@@ -80,6 +80,12 @@ install_google_chrome() {
         apt update
     fi
     apt install -y google-chrome-stable
+
+    # Add Desktop shortcut
+    SHORTCUT=/home/$LOCAL_USER/Bureaublad/google-chrome.desktop
+    cp /usr/share/applications/google-chrome.desktop $SHORTCUT
+    chown $LOCAL_USER:$LOCAL_USER $SHORTCUT
+    chmod a+x $SHORTCUT
 }
 
 install_zoom() {
@@ -115,7 +121,7 @@ remove_sudo() {
 # Setup UI options.
 # You can find the names of these options by setting them using the Linux Mint UI
 # and then running
-#    dconf dump /tmp/conf
+#    dconf dump / > /tmp/conf
 
 # This function is written out using declare to be run as the user (not root).
 # Variables must be local to function or echo-ed below.
