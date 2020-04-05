@@ -100,6 +100,17 @@ install_zoom() {
     cd -
 }
 
+# Linux Mint has a simple auto-update system.
+# See:
+# https://github.com/linuxmint/mintupdate/blob/master/usr/bin/mintupdate-automation
+# https://github.com/linuxmint/mintupdate/blob/master/usr/share/linuxmint/mintupdate/automation/index.json
+enable_automatic_updates() {
+    # Auto-update packages.
+    mintupdate-automation upgrade enable
+    # Remove old files.
+    mintupdate-automation autoremove enable
+}
+
 remove_sudo() {
     if id -nG "$LOCAL_USER" | grep -qw sudo; then
         echo "Removing $LOCAL_USER from sudo group"
