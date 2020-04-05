@@ -4,13 +4,13 @@
 # services. Runs as root in $TMP_DIR
 
 # For testing without using GitHub use:
-# BS=http://xxx.nrok.io/bootstrap
-# curl -sL $BS/install.sh | bash -s $BS/files.tgz
+# BS=http://xxx.ngrok.io/bootstrap
+# curl -sL $BS/install.sh | bash -s Will $BS/files.tgz
 
 # Download files from GitHub.
 REMOTE=https://raw.githubusercontent.com/willmoffat/regenboog-laptops/master
 DEFAULT_TARBALL=$REMOTE/bootstrap/files.tgz
-REMOTE_TARBALL=${1-$DEFAULT_TARBALL}
+REMOTE_TARBALL=${2-$DEFAULT_TARBALL}
 
 LOCAL_TARBALL=/tmp/files.tgz
 LOCAL_USER=leerling

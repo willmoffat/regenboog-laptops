@@ -9,6 +9,7 @@ Press `Ctrl-Alt-T` to open a terminal.
 (Replace YOUR_NAME with the name of the geek doing the install)
 
 `su -c 'curl -sL https://u.nu/regenrun | bash -s YOUR_NAME'`
+(enter root password)
 
 If successful you will see:`| Install part 1 finished |`
 
