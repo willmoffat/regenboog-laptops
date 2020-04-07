@@ -131,8 +131,15 @@ remove_sudo() {
     fi
 }
 
+# Send to https://docs.google.com/spreadsheets/d/1K6yCXS1v6yj8uXx8VXz95tTuIZKX7cbApuVadkcW2dE
 send_inventory() {
     set +e # Don't stop for errors in this function.
+
+    # Find the device mounted on /
+    # Trim the last character (the partition digit)
+    rootdev=$(mount | grep ' on / ' | cut -d' ' -f1)
+    dev=${rootdev::-1}
+
     # HOSTNAME - set during Linux install
     MODEL=$(dmidecode -s system-product-name)
     BIOS_DATE=$(dmidecode -s bios-release-date)
@@ -141,7 +148,7 @@ send_inventory() {
     CORES=$(cat /proc/cpuinfo  | grep processor | wc -l)
     CPU=$(dmidecode -s processor-version)
     RAM=$(dmidecode -t 17 | grep "Size.*MB" | awk '{s+=$2} END {print s / 1024}')
-    DISK=$(lsblk  --output SIZE -n -d /dev/sda)
+    DISK=$(lsblk  --output SIZE -n -d $dev)
     BATTERY_CAPACITY=$(upower -i /org/freedesktop/UPower/devices/battery_BAT0  | grep capacity | cut -d: -f2 | sed 's/ //g')
     BOOT_TIME=$(systemd-analyze time | head -1 | cut -d' ' -f10)
     # GEEK - typed by user
