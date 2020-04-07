@@ -43,7 +43,7 @@ download() {
     tar xfv $LOCAL_TARBALL
 }
 
-install_run_updater() {
+install_and_run_updater() {
     NAME=regenboog-update
     SERVICE="$NAME.service"
     TIMER="$NAME.timer"
@@ -251,7 +251,7 @@ $SETUP_FILE
 
 check_rootuser_or_die
 download
-install_updater
+install_and_run_updater
 remove_packages
 update_packages
 install_google_chrome
