@@ -43,14 +43,17 @@ download() {
     tar xfv $LOCAL_TARBALL
 }
 
-install_updater() {
+install_run_updater() {
     NAME=regenboog-update
     SERVICE="$NAME.service"
     TIMER="$NAME.timer"
 
+    # Enable the updater on next boot.
     systemctl daemon-reload
     systemctl enable "$TIMER"
-    systemctl start "$TIMER"
+
+    # Run it now.
+    systemctl start "$SERVICE"
 }
 
 # Check size of packages with:
